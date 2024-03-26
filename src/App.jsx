@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./App.css"; // Подключаем стили для примера
+import CatalogComponents from "./CatalogComponents";
 
 function App() {
   const [contentVisible, setContentVisible] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false); // Стейт для отслеживания загрузки изображения
+  const [menuVisible, setMenuVisible] = useState(false); // Стейт для отображения/скрытия бургер-меню
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setContentVisible(true);
-    }, 2000); // Имитируем задержку в 2 секунды перед появлением контента
+    }, 20); // Имитируем задержку в 2 секунды перед появлением контента
 
     return () => clearTimeout(timer);
   }, []);
@@ -34,57 +40,99 @@ function App() {
   ];
 
   return (
-    <div className="w-full h-screen relative flex flex-col gap-[200px] items-center justify-center p-10 mt-10">
+    <div className="w-full h-screen relative flex flex-col items-center justify-center p-10 mt-10">
       {imageLoaded && (
-        <header
-          className={`flex justify-between p-5 w-[1200px] mt-[-200px] rounded-[20px] bg-[#67BA75] content ${
-            contentVisible ? "contentVisible" : ""
-          }`}
-        >
-          <div className="flex gap-3">
-            {iconsLeft.map((icon, index) => (
-              <img
-                key={index}
-                src={icon.src}
-                alt={icon.alt}
-                className="w-[32px] h-[32px] rounded-lg bg-white p-2"
-              />
-            ))}
-          </div>
-          <ul className="flex gap-5">
-            {nav.map((content, index) => (
-              <li key={index} className="text-white text-[18px]">
-                {content.title}
-              </li>
-            ))}
-          </ul>
-          <div className="flex gap-3">
-            {iconsRight.map((icon, index) => (
-              <img
-                key={index}
-                src={icon.src}
-                alt={icon.alt}
-                className="w-[32px] h-[32px] rounded-lg bg-white p-2"
-              />
-            ))}
-          </div>
-        </header>
+        <>
+          <header
+            className={`ms:hidden flex justify-between p-5 w-[1200px] mt-[-200px] rounded-[20px] bg-[#67BA75] content ${
+              contentVisible ? "contentVisible" : ""
+            }`}
+          >
+            <div className="flex gap-3">
+              {iconsLeft.map((icon, index) => (
+                <img
+                  key={index}
+                  src={icon.src}
+                  alt={icon.alt}
+                  className="w-[32px] h-[32px] rounded-lg bg-white p-2"
+                />
+              ))}
+            </div>
+            <ul className="flex gap-5">
+              {nav.map((content, index) => (
+                <li key={index} className="text-white text-[18px]">
+                  {content.title}
+                </li>
+              ))}
+            </ul>
+            <div className="flex gap-3">
+              {iconsRight.map((icon, index) => (
+                <img
+                  key={index}
+                  src={icon.src}
+                  alt={icon.alt}
+                  className="w-[32px] h-[32px] rounded-lg bg-white p-2"
+                />
+              ))}
+            </div>
+          </header>
+          <button
+            className="ms:block lg:hidden btn2 absolute top-5 right-5"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            {menuVisible ? (
+              <img src="/icons/close-menu.svg" alt="close menu" />
+            ) : (
+              <img src="/icons/open-menu.svg" alt="open menu" className="" />
+            )}
+          </button>
+          <nav
+            className={`btn ls:hidden ms:block bg-[#67BA75] mt-[-60px] p-4 absolute rounded-l-2xl w-full h-screen right-0 transition-transform transform ${
+              menuVisible ? "translate-x-[5%]" : "translate-x-full"
+            }`}
+          >
+            <ul className="flex flex-col gap-3 mt-20 text-white items-center justify-between text-center">
+              {nav.map((content, index) => (
+                <li key={index} className="text-[18px]">
+                  {content.title}
+                </li>
+              ))}
+              <div className="flex gap-3">
+                {iconsLeft.map((icon, index) => (
+                  <img
+                    key={index}
+                    src={icon.src}
+                    alt={icon.alt}
+                    className="w-[32px] h-[32px] rounded-lg bg-white p-2"
+                  />
+                ))}
+              </div>
+              <div className="flex gap-3">
+                {iconsRight.map((icon, index) => (
+                  <img
+                    key={index}
+                    src={icon.src}
+                    alt={icon.alt}
+                    className="w-[32px] h-[32px] rounded-lg bg-white p-2"
+                  />
+                ))}
+              </div>
+            </ul>
+          </nav>
+        </>
       )}
-      <div
-        className={`absolute image-container ${
+      <img
+        src="/logo.svg"
+        className={`absolute w-[500px] h-[500px] image-container ${
           contentVisible ? "image-container-small" : ""
         }`}
-      >
-        <img
-          src="/logo.svg"
-          className="w-[500px] h-[500px]"
-          alt="logo"
-          onLoad={() => setImageLoaded(true)} // Помечаем, когда изображение загружено
-        />
-      </div>
+        alt="logo"
+        onLoad={() => setImageLoaded(true)} // Помечаем, когда изображение загружено
+      />
       {imageLoaded && ( // Показываем контент только после загрузки изображения
         <div
-          className={` flex flex-col content ${
+          className={`flex flex-col mt-[200px] content ${
             contentVisible ? "contentVisible" : ""
           }`}
         >
@@ -98,11 +146,13 @@ function App() {
             >
               <input
                 type="text"
+                required
                 placeholder="Ваше имя"
                 className="w-full border-b-[1px] border-[#003458] placeholder-[#175783] pl-2 pb-1"
               />
               <input
                 type="text"
+                required
                 placeholder="Ваш номер телефона или WhatsApp"
                 className="w-full border-b-[1px] border-[#003458] placeholder-[#175783] pl-2 pb-1"
               />
@@ -114,6 +164,7 @@ function App() {
               </button>
             </form>
           </div>
+          <CatalogComponents />
         </div>
       )}
     </div>
